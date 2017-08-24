@@ -1,0 +1,105 @@
+{% extends 'layout.html' %} {% block body %}
+<style>
+    .signup-page {
+        background-color: #eeeeee!important;
+        min-height: 80%;
+        /* Fallback for browsers do NOT support vh unit */
+        min-height: 80vh;
+        /* These two lines are counted as one :-)       */
+        display: flex;
+        align-items: center;
+    }
+    
+    .bg-uh {
+        background-color: #003da1 !important;
+        color: white!important;
+    }
+    
+    .uh-links > a {
+        color: #003da1 !important;
+    }
+    
+    [type="radio"]:checked + label::after,
+    .with-gap[type="radio"]:checked + label::after {
+        background-color: #003da1 !important;
+        z-index: 0;
+    }
+    
+    [type="radio"]:checked + label::after,
+    .with-gap[type="radio"]:checked + label::before,
+    .with-gap[type="radio"]:checked + label::after {
+        border: 2px solid #003da1;
+    }
+</style>
+
+<body class="signup-page">
+    <div class="signup-box">
+        <div class="logo"><img src='../static/images/UHG_Logo_R_RGB2.png' class='text-center img-responsive'> </div>
+        <div class="card">
+            <div class="body">
+                <form id="sign_up" action="{{ url_for('register_user') }}" method="POST">
+                    <div class="msg">Register a new account</div>
+                    <div class="input-group"> <span class="input-group-addon">
+                            <i class="material-icons">person</i>
+                        </span>
+                        <div class="form-line">
+                            <input type="text" name="username" class="form-control" id="username" placeholder="Insert required username here" required autofocus> </div>
+                    </div>
+                    <div class="input-group"> <span class="input-group-addon">
+                            <i class="material-icons">lock</i>
+                        </span>
+                        <div class="form-line">
+                            <input type="password" name="password" class="form-control" id="pwd" placeholder="Password" required> </div>
+                    </div>
+                    <div class="input-group"> <span class="input-group-addon">
+                            <i class="material-icons">date_range</i>
+                        </span>
+                        <div class="form-line">
+                            <input type="number" name="age" class="form-control" id="age" minlength="2" placeholder="Age" required> </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="radio" name='sex' value='male' id="male" class="with-gap">
+                        <label for="male">Male</label>
+                        <input type="radio" name='sex' value='female' id="female" class="with-gap">
+                        <label for="female" class="m-l-20">Female</label>
+                    </div>
+                    <div class="input-group"> <span class="input-group-addon">
+                            <i class="material-icons">date_range</i>
+                        </span>
+                        <div class="form-line">
+                            <input type="number" name="diagnosed" class="form-control" id="diag" minlength="2" placeholder="How many years have you been diagnosed with Parkinson's Disease?" required> </div>
+                    </div>
+                    <button class="btn btn-block btn-lg bg-uh waves-effect" type="submit">SIGN UP</button>
+                    <div class="m-t-25 m-b--5 align-center uh-links"> <a href="/">You already have a account?</a> </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+   <!-- <div class="container">
+        <div class="row login">
+            <div class="log_form"> <img src='../static/images/UHG_Logo_R_RGB2.png' class='logotop text-center'>
+                <div class='form_box'>
+                    <form action="{{ url_for('register_user') }}" method="POST">
+                        <div class="form-group">
+                            <label for="username">New Username: </label>
+                            <input type="text" name="username" class="form-control" id="username"> </div>
+                        <div class="form-group">
+                            <label for="pwd">New Password: </label>
+                            <input type="password" name="password" class="form-control" id="pwd"> </div>
+                        <div class="form-group">
+                            <label for="age">Age: </label>
+                            <input type="number" name="age" class="form-control" id="age"> </div>
+                        <div class='form-group'>
+                            <input type='radio' name='sex' value='male'>Male
+                            <input type='radio' name='sex' value='female' style="margin-left: 30px;">Female </div>
+                        <div class="form-group">
+                            <label for="diag">How long, in years, have you been diagnosed with Parkinson's Disease?</label>
+                            <input type="number" name="diagnosed" class="form-control" id="diag"> </div>
+                        <button type="submit" class="logbtn">Register</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div> -->
+{% endblock %}

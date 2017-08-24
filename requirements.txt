@@ -1,0 +1,23 @@
+# Run Python3.5 as the virtualenv
+# source activate python35
+pip install flask
+# useful with opencv
+pip install imutils
+pip install dlib
+pip install pandas
+conda install -c menpo opencv3
+conda install -c blaze sqlite3=3.8.6
+
+#STT Required Modules:
+
+pip install pyaudio
+pip install pocketsphinx
+pip install speech_recognition
+pip install num2words
+pip install inflect 
+conda install matplotlib
+pip install hachoir3
+pip3 install newspaper3k
+pip install face_recognition
+#create ‘logfiles’ folder in root
+

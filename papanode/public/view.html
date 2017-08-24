@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title> vis </title>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+</head>
+
+<body> <img id="play">
+    <div id="log"></div>
+</body>
+<!--imports socket io client and jquery-->
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io();
+    var im = document.getElementById("play");
+    socket.on('stream', function (image) {
+        im.src = image;
+    });
+</script>
+
+</html>

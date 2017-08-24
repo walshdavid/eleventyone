@@ -1,0 +1,24 @@
+{
+  "name": "papa",
+  "version": "1.0.0",
+  "description": "websocket server video streaming application",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "John Kenny",
+  "license": "ISC",
+  "dependencies": {
+    "binary": "^0.3.0",
+    "binaryjs": "^0.2.1",
+    "express": "^4.15.3",
+    "jasmine": "^2.6.0",
+    "js": "^0.1.0",
+    "log": "^1.4.0",
+    "nodemon": "^1.11.0",
+    "socket.io": "^2.0.3",
+    "socket.io-stream": "^0.9.1",
+    "test": "^0.6.0",
+    "wav": "^1.0.1"
+  }
+}

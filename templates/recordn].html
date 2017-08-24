@@ -1,0 +1,423 @@
+{% extends 'layout.html' %} {% block body %}
+<!-- js files for websocket node libs as they will not be served from the note server-->
+<script src="{{ url_for('static',filename = 'js/binary.min.js')}}"></script>
+<script src="{{ url_for('static',filename = 'js/socket.io.js')}}"></script>
+<!-- js for facial tracking software-->
+<script src="{{ url_for('static',filename = 'js/tracking-min.js')}}"></script>
+<script src="{{ url_for('static',filename = 'js/face-min.js')}}"></script>
+<!--  hiding menu for calib and read pages --><span class='open' onclick="openNav()"><i class="fa fa-bars" aria-hidden="true"></i>
+</span>
+<div id="mySidenav" class="sidenav-read"> <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <ul class="nav navbar-nav">
+        <li><a href='/menu/'>Menu</a></li>
+        <li><a href="/contact">Contact Your Doctor</a></li>
+        <li><a href='/graphs/'>See Graphs</a></li>
+        <li><a href='/optum'>Optum Health</a></li>
+        <li><a href="/pref">Patient Preferences</a></li>
+        <li><a href="/logout/">Logout</a></li>
+    </ul>
+</div>
+<style>
+    .prescreen {
+        margin-left: 0px;
+        margin-top: 80px;
+        position: absolute;
+        z-index: 5000;
+    }
+    
+    .topcan {
+        z-index: 5100;
+    }
+    
+    #myModal {
+        text-align: center;
+        z-index: 6000;
+    }
+    
+    .unblur {
+        padding-top: 410px;
+        padding-bottom: 60px;
+        margin-bottom: 40px;
+        text-align: center;
+    }
+    
+    .rec {
+        /*                               flasher*/
+        background-color: firebrick;
+        border-radius: 15px;
+        border: none;
+        color: #FFFFFF;
+        display: inline-block;
+        font-family: Arial;
+        font-size: 10px;
+        cursor: wait;
+        padding: 6px 10px;
+        text-align: center;
+        text-decoration: none;
+        text-shadow: 2px 2px black;
+        position: absolute;
+        left: 970px;
+        top: 10px;
+        z-index: 6000;
+    }
+    .errorCheck {
+        width: 45%;
+        margin-left: 55%;
+        border: 3px solid;
+        border-color: #003da1;
+        background: #fff;
+        text-align: center;
+        height: 85%;
+        border-radius: 3%;
+        padding: 1.5%;
+        margin-top: 4%;
+    }
+
+    .pretext{
+        background: #fff;
+        width: 100%;height: 450px;
+        font-size: 20px;
+        overflow-y: scroll;
+        padding: 20px;
+        line-height: 1.5em;
+        transition: .5s;
+        display: inline-block;
+        border-radius: 3%;
+        box-shadow: 4px 4px 5px;
+    }
+
+</style>
+<div class='container'>
+    <!-- old size style="width:250px; height: 189px;" -->
+    <video src="" class='prescreen' id="vid" width="640" height="360" preload autoplay loop muted></video>
+    <canvas id="trackerCanvas" class='prescreen topCan' width="640" height="360"></canvas>
+    <canvas id="preview" style="display:none"></canvas>
+
+    <div class='row showmestart'>
+        <div class='col-md-12'>
+            <h3 class='read'>Calibrating audio and video… </h3> 
+        </div>
+        <div id="textdiv" class="col-md-12 pretext">
+            <div class="errorCheck"><div id='errorTest'>Please stay silent and ensure the camera is capturing your face.</div></div>
+        </div>
+    </div>
+    <div class='row hidemestart'>
+        <div class='col-md-12'>
+            <h3 class='read'>Please press the button below to begin.</h3> </div>
+        <div class='col-md-12' id='textdiv'>
+            <p class='text center-block'> {{ value }} </p>
+        </div>
+        <div class='col-md-12' style="text-align:center;" style="display:none">
+            <button type='button' id='start-button' class='recordbtn' onclick="start()">Start</button>
+            <button id="End-Button" type='button' class='recordbtn' onclick="finish()">End Recording</button>
+        </div>
+        <div class="col-md-12"> <span id='flasher' class="rec">R</span> </div>
+    </div>
+    <!-- Modal used for pre check errors with video and audio-->
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Woops Something went wrong</h4> </div>
+                <div class="modal-body">
+                    <p>We're sorry, but you were not able to complete the prescreening check.
+                       Please try again later.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="homepage" class="btn btn-default">Home</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--    to remove blur on text and swap buttons-->
+<script>
+    /* Set the width of the side navigation to 250px and the left margin of the page content to 250px */
+    /* Set the width of the side navigation to 250px */
+    function openNav() {
+        document.getElementById("mySidenav").style.width = "11%";
+    }
+    /* Set the width of the side navigation to 0 */
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+    }
+    //gets the current screen with and height
+    var w = window
+        , d = document
+        , e = d.documentElement
+        , g = d.getElementsByTagName('body')[0]
+        , x = w.innerWidth || e.clientWidth || g.clientWidth
+        , y = w.innerHeight || e.clientHeight || g.clientHeight;
+    console.log("xpos" + x);
+    console.log("ypos" + y);
+</script>
+<script>
+    $(".unblur").css("filter", "blur(0px)");
+  /*  document.getElementById("fail").addEventListener("click", function () {
+        console.log("clicked");
+        //window.location.reload(true);
+        backGroundNoiseOk = true;
+        preCheck = true;
+        timer = true;
+        amp = 0;
+    });*/
+    document.getElementById("homepage").addEventListener("click", function () {
+        window.location = '/menu/';
+    });
+    $("#start-button").hide();
+    $(".hidemestart").hide();
+    var timer = true;
+    var amp = 0;
+    var MAX_AMP = 0.35;
+    var FACE_PERCENTAGE_THRESHOLD = 0.6;
+    var MAX_ALLOWED_FAILS = 5;
+    var sb = document.getElementById("start-button");
+    var eb = document.getElementById("End-Button");
+    //
+    var backGroundNoiseOk = true;
+    var facesFound = 0
+        //tracker canvas to draw out line
+    var trackerCanvas = document.getElementById("trackerCanvas");
+    var trackerCtx = trackerCanvas.getContext("2d");
+    //sets up a TRACKER FOR FACE 
+    var tracker = new tracking.ObjectTracker(['face']);
+    tracker.setStepSize(1.7);
+    ///tracking
+    var trackerTask = tracking.track('#vid', tracker, {
+        camera: true
+    });
+    //used for the pre screening
+    var countFails = 0;//count the number of fails only allow 5
+    var nFrames = 0;//count the number of times the face has been checked during 1 test
+    var countFaceCorrect = 0;//the number of times the face was correct in one test
+    var preCheck = true;
+    var user = '{{username}}';
+    var file = '{{filename}}';
+    var endB = document.getElementById("End-Button");
+    endB.style.display = "none"
+    var flasher = document.getElementById("flasher");
+    flasher.style.display = 'initial';
+    var vid = document.getElementById("vid");
+    // canvas set up
+    var can = document.getElementById("preview");
+    var context = can.getContext("2d");
+    can.width = 320;
+    can.height = 240;
+    context.width = can.width;
+    context.height = can.height;
+    var counter = 1;
+    ////////
+    //open image socket
+    var socket = io.connect("http://localhost:1235");
+    var imageLoc = "";
+    //vid
+    var vid = document.getElementById("vid");
+    //create a socket socckection --  this can be changed to ip address and port server is running on
+    var client = new BinaryClient('ws://localhost:9000');
+    client.on('open', function () {
+        /*
+                        if the use has a log in and the files need to be stored in a
+                        location set the location here... 
+                        The node app should sit on the same server in a different
+                        port and have access to the location the folder to save the
+                        files to
+        
+                    */
+        //this will be used to store the recording
+        var filename = "../recordings_audio/" + user + '/' + file;
+        //create a stream with a mimi of the file name
+        window.Stream = client.createStream(filename + ".wav");
+        //this is web code to get the users media access from there camera and mic 
+        if (!navigator.getUserMedia) {
+            navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+        }
+        //if the media is approved
+        if (navigator.getUserMedia) {
+            //get the audio
+            navigator.getUserMedia({
+                video: true
+                , audio: true
+            }, streamAudio, function (e) {
+                //if there are issues alte
+                alert('Woops something went wrong');
+            });
+        }
+        //if media is not supported by the browser alert the user
+        else alert('Media not supported by your browser please ensure you have the latest version');
+        //1000 == 1 sec
+        //not recording
+        var recording = false;
+        //when the recording button is clicked
+        window.start = function () {
+                recording = true;
+                $("p").css("filter", "blur(0px)");
+                $("span:last").addClass("flash");
+                sb.style.display = 'none';
+                //eb.style.display = 'block'
+                eb.style.display = 'initial';
+                $(".rec").show("slow");
+            }
+            //when the stop 
+        window.finish = function () {
+                recording = false;
+                $('button#End-Button').css("visibility", "hidden");
+                $("span:last").removeClass("flash"); //end the stream
+                window.Stream.end();
+                location.href = "{{url_for('loadScreen')}}";
+            }
+            //called when the media is availible
+        function streamAudio(e) {
+            //add video to the video tag
+            vid.src = window.URL.createObjectURL(e);
+            //set audio context
+            audioContext = window.AudioContext || window.webkitAudioContext;
+            ctx = new audioContext();
+            // the sample rate is in context.sampleRate
+            audioInput = ctx.createMediaStreamSource(e);
+            var bufferSize = 4096;
+            var lastOut = 0.0;
+            //create a recorder with a buffer set
+            recorder = ctx.createScriptProcessor(bufferSize, 1, 1);
+            recorder.onaudioprocess = function (e) {
+                if (preCheck == true) {
+                    var temp = e.inputBuffer.getChannelData(0);
+                    // Iterate through buffer to get max amplitude
+                    for (var i = 0; i < temp.length; i++) {
+                        var loud = Math.abs(temp[i]);
+                        if (loud > amp) {
+                            amp = loud;
+                            //this means its to noisy --adjust if needed
+                            if (amp >= MAX_AMP) {
+                                console.log("loud is" + amp);
+                                backGroundNoiseOk = false;
+                            }
+                        }
+                    }
+                    //to track faces in video
+                    trackFace();
+                    if (timer) {
+                        timer = false;
+                        setTimeout(function () {
+                            console.log(timer);
+                            if (preCheck) {
+                                ///checks
+                                console.log("running");
+                                console.log("*************************");
+                                console.log("backGroundNoiseOk" + backGroundNoiseOk);
+                                console.log("facesFound" + facesFound);
+                                console.log("*************************");
+                                // socket.emit('videoimages', can.toDataURL("image/webp"), "../files/image_cache/" + user + '.jpg');
+                                //if the presccreen is passed
+                                if ((facesFound == 1 || countFaceCorrect/nFrames >= FACE_PERCENTAGE_THRESHOLD) && backGroundNoiseOk ) {
+
+                                    /*temp = nil;
+                                    tracker = nil;*/
+                                    /*
+                                    animates the video after prescreen sucess
+                                    valuses need to be changes if the video is changed on the prescreen*/
+                                    $("video").animate({
+                                        left: '1140px'
+                                        , top: '440px'
+                                        , height: '200px'
+                                        , width: '200px'
+                                    }, "slow");
+                                    $(".showmestart").hide();
+                                    //show the sart button
+                                    $("#start-button").show("slow");
+                                    $(".hidemestart").show("slow");
+                                    $(".rec").hide();
+                                    precheck = false; 
+                                    trackerTask.stop();
+                                    context.drawImage(vid, 0, 0, context.width, context.height);
+                                    socket.emit('videoimages', can.toDataURL("image/webp"), "../files/image_cache/newer_images/" + user + '.jpg');
+                                }
+                                //if there is any issues add the issue to the modal window and display to the user
+                                else {
+                                    document.getElementById("errorTest").innerHTML = '';
+                                    if (backGroundNoiseOk == false) {
+                                        document.getElementById("errorTest").innerHTML += "There is too much background noise detected to complete an accurate audio recording. Please adjust move to a silent place or try again later.<br />"
+                                    }
+                                    if (facesFound == 0) {
+                                        document.getElementById("errorTest").innerHTML += "Our system has not detected your face. Please adjust your camera and ensure you are visible on screen. It is vital that we can detect your face in the video.<br />"
+                                    }
+                                    else if (facesFound > 1){
+                                        document.getElementById("errorTest").innerHTML += "Our system has detected numerous faces. Please ensure only your face is  visible on screen. Multiple faces in a video can decrease accuracy of this application and may have a negative impact on the information provided to your doctor. "
+                                    }
+                                    $(errorTest).fadeIn(200).fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
+                
+                                    countFails++;
+                                    timer = true;
+                                    if (countFails == MAX_ALLOWED_FAILS){
+                                         $('#myModal').modal('show');
+                                    }
+                                }
+                            }
+                            //disable precheck
+                            //preCheck = false;
+                            //clears the tracker canvas
+                            trackerCtx.clearRect(0, 0, trackerCanvas.width, trackerCanvas.height);
+                            ///  console.log(facesFound);
+                            //$("video").removeClass("prescreen");
+                        }, 10000);
+                        //console.log("running");
+                        //return;
+                    }
+                }
+                console.log("pre" + preCheck);
+                //return from thismethod if recording is false
+                if (!recording) return;
+                //console.log('recording');
+                //var data = e.inputBuffer.getChannelData(0);
+                //lowpass filter to clean the audio
+                var input = e.inputBuffer.getChannelData(0);
+                //var output = e.outputBuffer.getChannelData(0);
+               /* for (var i = 0; i < bufferSize; i++) {
+                    output[i] = (input[i] + lastOut) / 2.0;
+                    lastOut = output[i];
+                }*/
+                //stream the media to the server as an buffer int affary
+                window.Stream.write(convertoFloat32ToInt16(input));
+            }
+            audioInput.connect(recorder)
+            recorder.connect(ctx.destination);
+            //push vid to canvas and emit to server
+            setInterval(function () {
+                context.drawImage(vid, 0, 0, context.width, context.height);
+                if (!recording) return;
+                socket.emit('videoimages', can.toDataURL("image/webp"), "../recordings_video/" + user + '/' + counter + '.jpg');
+                counter++;
+                //console.log("sending")
+            }, 40);
+        }
+        //method to convert the media to an int buffer
+        function convertoFloat32ToInt16(buffer) {
+            var l = buffer.length;
+            var buf = new Int16Array(l)
+            while (l--) {
+                buf[l] = buffer[l] * 0xFFFF; //convert to 16 bit
+            }
+            return buf.buffer
+        }
+    });
+    //used to highlight traced face on the prescreen
+    function trackFace() {
+        tracker.on('track', function (event) {
+            nFrames++;
+            if (preCheck == true) {
+                facesFound = 0;
+                trackerCtx.clearRect(0, 0, trackerCanvas.width, trackerCanvas.height);
+                event.data.forEach(function (rect) {
+                    facesFound += 1;
+                    trackerCtx.strokeStyle = '#27AE60';
+                    trackerCtx.strokeRect(rect.x, rect.y, rect.width, rect.height);
+
+                });
+                if (facesFound == 1){
+                    countFaceCorrect++;
+                }
+            }
+        });
+    }
+</script> {% endblock %}

@@ -1,0 +1,81 @@
+{% extends 'nav.html' %} {% block body1 %}
+   
+<div class="container-fluid">
+    <div class="row">
+
+        <div class="log_form">
+        <div class='config_box'>
+            <form action="{{ url_for('config_func') }}" method="POST" class='config-form'>
+                           
+                    <div class="form-group cent">
+                        <label for="time">Time Period:</label>
+                        <input value="1" id="1" name="time" checked="checked" type="radio"><label for="1">Weekly</label>
+                        <input value="2" style="margin-left: 30px;" id="2" name="time" type="radio"><label for="2">Bi-Weekly</label>
+                        <input name="time" value="3" style="margin-left: 30px;" id="3" type="radio"><label for="3">Monthly</label>
+                    </div>
+
+                    <div class="col-md-6">
+                         <div class="form-group">
+                            <label for="ch_acc">% change in Accuracy : </label>
+                            <input name="ch_acc" class="form-control" id="ch_acc" type="int">
+                        </div>
+                        <div class="form-group">
+                            <label for="ch_wpm">% change in Words per Min: </label>
+                            <input name="ch_wpm" class="form-control" id="ch_wpm" type="int">
+                        </div>
+                        <div class="form-group">
+                            <label for="ch_freq">% change in Frequency Variance: </label>
+                            <input name="ch_freq" class="form-control" id="ch_freq" type="int">
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="ch_mod_freq">% change in Modal Frequency: </label>
+                            <input name="ch_mod_freq" class="form-control" id="ch_mod_freq" type="int">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="ch_avg_amp">% change in Average Amplitude: </label>
+                            <input name="ch_avg_amp" class="form-control" id="ch_avg_amp" type="int">
+                        </div>
+                        <div class="form-group">
+                            <label for="ch_breath">% change in Breathiness: </label>
+                            <input name="ch_breath" class="form-control" id="ch_breath" type="int">
+                        </div>
+                        <div class="form-group">
+                            <label for="ch_blink">% change in Blink Rate: </label>
+                            <input name="ch_blink" class="form-control" id="ch_blink" type="int">
+                        </div>
+                        <div class="form-group">
+                            <label for="ch_jvib">% change in Jaw Vibration Rate: </label>
+                            <input name="ch_jvib" class="form-control" id="ch_jvib" type="int">
+                        </div>
+                    </div>
+               
+
+                
+                <button type="submit" class="logbtn" value="save">Save Changes</button>
+
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+        //navbar script
+    function openNav() {
+        document.getElementById("mySidenav").style.width = "20%";
+    }
+
+    /* Set the width of the side navigation to 0 */
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+    } 
+
+</script>
+
+
+
+{% endblock %}

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title> Parkinsons Trackers </title>
+</head>
+
+<body>
+    <script src="js/binary.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <body>
+        <video src="" id="vid" style="width:400px; height: 360px;" autoplay="true" muted="true"></video>
+        <canvas id="preview" style="display:none"></canvas>
+        <!-- to be intergrated with other web content from server
+    apache or flask--->
+        <h1>audio realtime upload Demo</h1> </body>
+    <button onclick="start()" id="start">Start Recording</button>
+    <button onclick="finish()" id="fin">Finish</button>
+    <p id="message"></p>
+</body>
+<!--imports socket io client and jquery-->
+<script src="js/socket.io.js"></script>
+<script>
+    var vid = document.getElementById("vid");
+    $(document).ready(function () {
+        $('button#fin').hide();
+    });
+    // canvas set up
+    var can = document.getElementById("preview");
+    var context = can.getContext("2d");
+    can.width = 640;
+    can.height = 480;
+    context.width = can.width;
+    context.height = can.height;
+    var counter = 1;
+    ////////
+    //open image socket
+    var socket = io.connect("http://localhost:1235");
+    socket.emit("start", "LET'S GO!");
+    var imageLoc = "";
+    //vid
+    var vid = document.getElementById("vid");
+    //create a socket socckection --  this can be changed to ip address and port server is running on
+    var client = new BinaryClient('ws://localhost:9000');
+    client.on('open', function () {
+        /*
+            if the use has a log in and the files need to be stored in a
+            location set the location here... 
+            The node app should sit on the same server in a different
+            port and have access to the location the folder to save the
+            files to
+        
+        */
+        //this will be used to store the recording
+        var filename = "user/john";
+        //create a stream with a mimi of the file name
+        window.Stream = client.createStream(filename + ".wav");
+        //this is web code to get the users media access from there camera and mic 
+        if (!navigator.getUserMedia) {
+            navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+        }
+        //if the media is approved
+        if (navigator.getUserMedia) {
+            //get the audio
+            navigator.getUserMedia({
+                video: true
+                , audio: true
+            }, streamAudio, function (e) {
+                //if there are issues alte
+                alert('Woops something went wrong');
+            });
+        }
+        //if media is not supported by the browser alert the user
+        else alert('Media not supported by your browser please ensure you have the latest version');
+        //1000 == 1 sec
+        //not recording
+        var recording = false;
+        //when the recording button is clicked
+        window.start = function () {
+                recording = true;
+                $('button#start').hide();
+                $('button#fin').show();
+            }
+            //when the stop 
+        window.finish = function () {
+                recording = false;
+                $('button#fin').hide();
+                document.getElementById("message").innerHTML = "recording uploaded to server";
+                //end the stream
+                window.Stream.end();
+            }
+            //called when the media is availible
+        function streamAudio(e) {
+            //add video to the video tag
+            vid.src = window.URL.createObjectURL(e);
+            //set audio context
+            audioContext = window.AudioContext || window.webkitAudioContext;
+            ctx = new audioContext();
+            // the sample rate is in context.sampleRate
+            audioInput = ctx.createMediaStreamSource(e);
+            var bufferSize = 2048;
+            //create a recorder with a buffer set
+            recorder = ctx.createScriptProcessor(bufferSize, 1, 1);
+            recorder.onaudioprocess = function (e) {
+                //return from this method if recording is false
+                if (!recording) return;
+                console.log('recording');
+                //ad
+                var data = e.inputBuffer.getChannelData(0);
+                //stream the media to the server as an buffer int affary
+                window.Stream.write(convertoFloat32ToInt16(data));
+            }
+            audioInput.connect(recorder)
+            recorder.connect(ctx.destination);
+            //push vid to canvas and emit to server
+            setInterval(function () {
+                context.drawImage(vid, 0, 0, context.width, context.height);
+                if (!recording) return;
+                socket.emit('videoimages', can.toDataURL("image/webp"), 'jelo/' + counter + '.jpg');
+                counter++;
+                console.log("sending")
+            }, 40);
+        }
+        //method to convert the media to an int buffer
+        function convertoFloat32ToInt16(buffer) {
+            var l = buffer.length;
+            var buf = new Int16Array(l)
+            while (l--) {
+                buf[l] = buffer[l] * 0xFFFF; //convert to 16 bit
+            }
+            return buf.buffer
+        }
+    });
+</script>
+
+</html>

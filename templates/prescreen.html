@@ -1,0 +1,221 @@
+{% extends 'layout.html' %} {% block body %}
+<style>
+            .precard {
+        min-height: 100%;
+        /* Fallback for browsers do NOT support vh unit */
+        min-height: 100vh;
+        /* These two lines are counted as one :-)       */
+        display: flex;
+        align-items: center;
+    }
+    
+    .full {
+        min-width: 100%;
+        padding-bottom: 100px;
+    }
+    /* Small Devices, Tablets */
+    
+    @media only screen and (max-width: 620px) {
+        .presbtn {
+            padding: 10px 20px;
+            margin-top: 35px;
+            margin-left: 4px;
+            font-size: 60px;
+            border-radius: 20px;
+            min-width: 0px;
+        }
+        /* Small Devices, Tablets */
+        @media only screen and (max-width: 480px) {
+            .presbtn {
+                padding: 8px 16px;
+                margin-top: 35px;
+                margin-left: 0px;
+                font-size: 40px;
+                border-radius: 20px;
+                min-width: 0px;
+            }
+</style>
+
+<body class="theme-blue">
+    <!--<div class='col-md-12 col-lg-12' id='welcome'>
+        <h2 class='welcome'> Welcome {{session['user']}}!</h2> </div>-->
+    <div class="col-xs-12 col-sm-12  col-md-push-1 col-lg-push-1 col-md-10 col-lg-10 precard ">
+        <div class="card full">
+            <div id='div1'>
+                <div class='text_pre' id='menugroup'>
+                    <h3>How are you feeling today?</h3>
+                    <section>
+                        <button name="q1" type='button' class='presbtn' value="Not Okay" onclick="showDiv2(this)"> <i class="fa fa-frown-o" aria-hidden="true"></i> </button>
+                        <button name="q1" type='button' class='presbtn' value="Okay" onclick="showDiv2(this)"><i class="fa fa-meh-o" aria-hidden="true"></i></button>
+                        <button name="q1" type='button' class='presbtn' value="Good" onclick="showDiv2(this)"><i class="fa fa-smile-o" aria-hidden="true"></i></button>
+                    </section>
+                </div>
+            </div>
+            <div id='div2'>
+                <div class='text_pre' id='menugroup'>
+                    <h3>Have you eaten today?</h3>
+                    <section>
+                        <button name="q2" type='button' class='presbtn1' value="Yes" onclick="showDiv3(this)">Yes</button>
+                        <button name="q2" type='button' class='presbtn1' value="No" onclick="showDiv3(this)">No</button>
+                        
+                    </section>
+                </div>
+            </div>
+            <div id='div3'>
+                <div class='text_pre' id='menugroup'>
+                    <h3>Have you taken your medication?</h3>
+                    <section>
+                        <button name="q3" type='button' class='presbtn1' value="Yes" onclick="consoleLog(this)">Yes</button>
+                        <button name="q3" type='button' class='presbtn1' value="No" onclick="consoleLog(this)">No</button>
+                        
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var div1 = document.getElementById('div1');
+        var div2 = document.getElementById('div2');
+        var div3 = document.getElementById('div3');
+        div1.style.display = 'block';
+        div2.style.display = 'none';
+        div3.style.display = 'none';
+        var val1 = "";
+        var val2 = "";
+        var val3 = "";
+
+        function showDiv2(button1) {
+            val1 = button1.value;
+            div1.style.display = 'none';
+            div2.style.display = 'block';
+            console.log(val1);
+        }
+
+        function showDiv3(button2) {
+            val2 = button2.value;
+            div2.style.display = 'none';
+            div3.style.display = 'block';
+            console.log(val2);
+        }
+
+        function consoleLog(button3) {
+            val3 = button3.value;
+            console.log(val3);
+            var datavalues = {
+                'q1': val1
+                , 'q2': val2
+                , 'q3': val3
+            }
+            console.log(datavalues)
+            $.ajax({
+                url: {{ url_for('menu_page')}}
+                , type: 'POST'
+                , data: datavalues, // converts js value to JSON string
+                dataType: "json"
+            }).done(function (result) { // on success get the return object from server
+                window.location.href = "/menu/"
+                console.log(result) // do whatever with it. In this case see it in console
+            })
+        }
+    </script> {% endblock %}
+
+
+<!--                                                        old page
+<div class='col-md-12 col-lg-12' id='welcome'>
+    <h2 class='welcome'> Welcome {{session['user']}}!</h2>
+</div>
+
+<div class='container'>
+    <div id='div1' class='col-md-12 col-lg-12'>
+        <div id='prescreen_box'>
+            <div class='text_pre' id='menugroup'>
+                <h3>How are you feeling today?</h3>
+                <section>
+                       <button name="q1" type='button' class='presbtn' value= "Not Okay" onclick="showDiv2(this)" > <i class="fa fa-frown-o" aria-hidden="true"></i> </button>
+                    <button name="q1" type='button' class='presbtn' value="Okay" onclick="showDiv2(this)"><i class="fa fa-meh-o" aria-hidden="true"></i></button>
+                    <button name="q1" type='button' class='presbtn' value="Good" onclick="showDiv2(this)"><i class="fa fa-smile-o" aria-hidden="true"></i></button>                
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <div id='div2' class='col-md-12 col-lg-12'>
+        <div id='prescreen_box'>
+            <div class='text_pre' id='menugroup'>
+                <h3>Have you eaten today?</h3>
+                <section>
+                    <button name="q2" type='button' class='presbtn1' value="No" onclick="showDiv3(this)">No</button>
+                    <button name="q2" type='button' class='presbtn1' value="Yes" onclick="showDiv3(this)">Yes</button>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <div id='div3' class='col-md-12 col-lg-12'>
+        <div id='prescreen_box'>
+            <div class='text_pre' id='menugroup'>
+                <h3>Have you taken your medication?</h3>
+                <section>
+                    <button name="q3" type='button' class='presbtn1'  value="No" onclick="consoleLog(this)">No</button>
+                    <button name="q3" type='button' class='presbtn1'  value="Yes" onclick="consoleLog(this)">Yes</button>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var div1 = document.getElementById('div1');
+    var div2 = document.getElementById('div2');
+    var div3 = document.getElementById('div3');
+    div1.style.display = 'block';
+    div2.style.display = 'none';
+    div3.style.display = 'none';
+    var val1 = "";
+    var val2 = "";
+    var val3 = "";
+
+    function showDiv2(button1) {
+        val1 = button1.value;
+        div1.style.display = 'none';
+        div2.style.display = 'block';
+        console.log(val1);
+    }
+
+    function showDiv3(button2) {
+        val2 = button2.value;
+        div2.style.display = 'none';
+        div3.style.display = 'block';
+        console.log(val2);
+    }
+    
+    function consoleLog(button3){
+        val3 = button3.value;
+        console.log(val3);
+        
+        var datavalues = {
+        'q1': val1,
+        'q2': val2,
+        'q3': val3
+        }
+        
+        console.log(datavalues)
+        
+        $.ajax({
+        url: {{url_for('menu_page')}},
+        type: 'POST',
+        data: datavalues,   // converts js value to JSON string
+        dataType: "json"
+        })
+        .done(function(result){     // on success get the return object from server
+            window.location.href = "/menu/"
+            console.log(result)     // do whatever with it. In this case see it in console
+        })
+    }
+
+      
+  
+</script>
+-->
+

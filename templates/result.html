@@ -1,0 +1,373 @@
+<!--
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Aug  4 15:02:59 2017
+
+@author: dwalsh18
+"""
+-->
+
+{% extends 'nav.html' %} {% block body1 %}
+    
+    <div class='container-fluid'>
+        <div class='row'>
+            <header class='header'>
+                <h2 class='col-md-2 res_head'><span class="open" onclick="openSide()"><i class="fa fa-bars" aria-hidden="true"></i>
+</span>Tip of the day: </h2>
+                <div class='col-md-10 help_tip'> {{ value }} </div>
+                <img class='header_bottom' src='../static/images/headerBottom.png'>
+            </header>
+        </div>
+        
+        <div class='row top'>
+            <div class='col-md-4'>
+                <div id='mood' class='box' data-toggle='popover' href='#' data-content='This tracks your mood day to day. It is used to ensure you maintain good mental health throughout the project.' data-placement='bottom' >
+                    <h2 class='res_title'>Mood</h2>
+                    
+                </div>
+            </div>
+            <div class='col-md-4'>
+                <div id='med' class='box' data-toggle='popover' href='#' data-content='This is just ensuring you are taking the correct medication day to day.' data-placement='bottom'>
+                    <h2 class='res_title'>Medication</h2>
+                </div>
+            </div>
+            <div class='col-md-4'>
+                <div id='food' class='box' data-toggle='popover' href='#' data-content='A proper diet has a huge effect of the state of your health.' data-placement='bottom' >
+                    <h2 class='res_title'>Nutrition</h2>
+                </div>
+            </div>   
+        </div>
+        <div class="row">
+            <div class='col-md-4'>
+                <div id='acc' class='box' data-toggle='popover' href='#' data-content='This is a measurement of how accurately you are reading the text passages each day. It allows us to track the quality of your speech.' data-placement='top' >
+                 <h2 class='res_title'>Speech Accuracy</h2>
+                </div>
+            </div>
+            <div class='col-md-4'>
+                <div id='wpm' class='box' data-toggle='popover' href='#' data-content='Speech rate is a measurement of the amount of words spoken every minute.' data-placement='top'>
+                    <h2 class='res_title'>Speech Rate</h2>
+                </div>
+            </div>
+            <div class='col-md-4'>
+                <div id='var' class='box' data-toggle='popover' href='#' data-content='Frequency Variance is a measeure of the range of frequencies you speak in.' data-placement='top' >
+                    <h2 class='res_title'>Frequency Variance</h2>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class='col-md-4'>
+                <div id='breath'class='box' data-toggle='popover' href='#' data-content='Breathiness is how often breaths are taken during speech and how long the breaks are for.' data-placement='top' >
+                    <h2 class='res_title'>Breathiness</h2>
+                </div>
+            </div>
+            <div class='col-md-4'>
+                <div id='blink' class='box' data-toggle='popover' href='#' data-content='The blink rate is a count of how mant times a minute you are blinking.' data-placement='top' >
+                    <h2 class='res_title'>Blink Rate</h2>
+                </div>
+            </div>
+            <div class='col-md-4'>
+                <div id='jvib' class='box' data-toggle='popover' href='#' data-content='This is a measure of how much the jaw moves during speech. This is to detect any possible tremors whilst speaking.' data-placement='top'>
+                    <h2 class='res_title'>Jaw Vibration</h2>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">  <!-- buttons -->
+            <div class='col-sm-12 rebtn'>
+                <div class="col-sm-3">
+                    <a href="/menu/"><button type='button' class='res_recordbtn'>Home</button></a>
+                </div>
+                <div class="col-sm-3 col-sm-push-6">
+                    <a href="/graphs/"><button type='button' class='res_recordbtn'>More Information</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+        <script>
+// When the user clicks on <div>, open the popup
+function myFunction() {
+    var popup = document.getElementById("mood");
+    popup.classList.toggle("show");
+    popup.classList.toggle("hide");
+}
+        
+$(document).ready(function(){
+    $('[data-toggle="popover"]').popover();
+});
+
+$(document).on('click', function (e) {
+    $('[data-toggle="popover"],[data-original-title]').each(function () {
+        //the 'is' for buttons that trigger popups
+        //the 'has' for icons within a button that triggers a popup
+        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {                
+            (($(this).popover('hide').data('bs.popover')||{}).inState||{}).click = false  // fix for BS 3.3.6
+        }
+
+    });
+});
+            
+     function openSide() {
+        document.getElementById("mySidenav").style.width = "20%";
+    };
+    /* Set the width of the side navigation to 0 */
+    function closeSide() {
+        document.getElementById("mySidenav").style.width = "0";
+    };
+            
+            
+///////////////////////////         pulling data for deterioration      //////////////////
+  //loads the json of the users data from python 
+                var json = "{{jsonstring}}";
+                var vjson = "{{videojsonstring}}";
+                var ch_acc = "{{ch_acc}}";  // has to be set to use db values
+                var ch_wpm = "{{ch_wpm}}";
+                var ch_var = "{{ch_var}}";
+                var ch_breath = "{{ch_breath}}";
+                var ch_blink = "{{ch_blink}}";
+                var ch_jvib = "{{ch_jvib}}";
+                console.log('ch_jvib = ' + ch_jvib)
+                var mood = "{{mood}}";
+                var medication = "{{medication}}";
+                var food = "{{food}}";
+                console.log(mood);
+                console.log(medication);
+                console.log(food);
+            
+            //prescreen data
+                if (mood === 'Good'){
+                    $("#mood").css("background-color","#27ae60");
+                }
+                else if (mood === 'Okay'){
+                    $("#mood").css("background-color","#ff4");
+                }
+                else if (mood === 'Not Okay'){
+                    $("#mood").css("background-color","#f02");
+                }
+            
+                if (medication === 'Yes'){
+                    $("#med").css("background-color","#27ae60");
+                }
+                else if (medication === 'No'){
+                    $("#med").css("background-color","#f02");
+                }
+            
+                if (food === 'Yes'){
+                    $("#food").css("background-color","#27ae60");
+                }
+                else if (food === 'No'){
+                    $("#food").css("background-color","#f02");
+                }
+            
+                //crates a funtion to clean the data using regEx to remove #&34 and insert "
+                var decodeHtmlEntity = function (x) {
+                    return x.replace(/&#(\d+);/g, function (match, dec) {
+                        return String.fromCharCode(dec);
+                    });
+                };
+                //clears the python data
+                var cleanedData = decodeHtmlEntity(json);
+                var vid_cleanedData = decodeHtmlEntity(vjson);
+                //parses the data to JSON
+                var c = JSON.parse(cleanedData);
+                var v = JSON.parse(vid_cleanedData);
+                var len = Object.keys(c.accuracy).length;
+                var wnewsest, wpoint, wmean = 0;            // words per min //
+                var accnewsest, accpoint, accmean = 0;
+                var vnewsest, vpoint, vmean =0;
+                var MFnewsest, MFpoint, MFmean =0;
+                var Tnewsest, Tpoint, Tmean =0;
+                var Anewsest, Apoint, Amean =0;
+                var blinkNewest, BlinkPoint, BlinkMean = 0;
+                var ppmPoint, ppmNewest, ppmMean = 0;
+                for (var key in c.accuracy) {
+                    // lab.push(key);
+                    /// dat.push(Math.floor(c.accuracypercentage[key]));
+                    len--;
+
+                    if (len != 0) {
+                        accmean = accmean + Math.floor(c.accuracy[key]);
+                        wmean = wmean + Math.floor(c.words[key]);
+                        vmean = vmean + Math.floor(c.variance[key]);
+                        MFmean = MFmean + Math.floor(c.modalFrequency[key]);
+                        Tmean = Tmean + Math.floor(c.brTime[key]);
+                        Amean = Amean + Math.floor(c.avgAmp[key]);
+                    }
+                    else {
+                        accnewsest = Math.floor(c.accuracy[key]);
+                        wnewsest = Math.floor(c.words[key]);
+                        vnewsest = Math.floor(c.variance[key]);
+                        MFnewsest = Math.floor(c.modalFrequency[key]);
+                        Tnewsest = Math.floor(c.brTime[key]);
+                        Anewsest = Math.floor(c.avgAmp[key]);
+                    }
+                }
+                len = Object.keys(v.peakspermin).length;
+                console.log(v.peakspermin);
+                for (var key in v.blinkspermin){
+                    len--;
+                    if (len != 0){
+                        BlinkMean = BlinkMean + Math.floor(v.blinkspermin[key]);
+                        ppmMean = ppmMean + Math.floor(v.peakspermin[key]);
+                        console.log('ppmmean1 ' + ppmMean);
+                    }
+                    else{
+                        blinkNewest = Math.floor(v.blinkspermin[key]);
+                        ppmNewest = Math.floor(v.peakspermin[key]);
+                        console.log('ppmnewest ' + ppmNewest);
+                    }
+                }
+            
+            //          accuracy
+                accmean = accmean / (Object.keys(c.accuracy).length - 1);
+                accpoint = Math.floor(accnewsest - accmean);
+                var det_acc = Math.abs(accpoint);
+//                console.log('deterioation is ' + det_acc)
+                if (det_acc <= (ch_acc/2)){
+                    $("#acc").css("background-color","#27ae60");
+//                    console.log('d=' + det_acc);
+//                    console.log('c= ' + ch_acc + 'green');
+                    sessionStorage.setItem('acc_color','#27ae60')
+                }
+                else if ((ch_acc/2) < det_acc && det_acc <= ch_acc){
+                    $("#acc").css("background-color","#ff4");
+//                    console.log('d=' + det_acc);
+//                    console.log('c= ' + ch_acc + 'yellow');
+                    sessionStorage.setItem('acc_color','#ff4')
+
+                }
+                else if (det_acc > ch_acc){
+                    $("#acc").css("background-color","#f02");
+//                    console.log('d=' + det_acc);
+//                    console.log('c= ' + ch_acc + 'red');
+                    sessionStorage.setItem('acc_color','#f02')
+
+                }
+            //      wpm
+                wmean = wmean / (Object.keys(c.words).length - 1);
+                wpoint = wnewsest - wmean;
+                wpoint = Math.floor((wpoint / wmean) * 100);
+                var det_wpm = Math.abs(wpoint);
+//                console.log('deterioation is ' + det_wpm)
+                if (det_wpm <= (ch_wpm/2)){
+                    $("#wpm").css("background-color","#27ae60");
+//                    console.log('d=' + det_wpm);
+//                    console.log('c= ' + ch_wpm + 'green');
+                    sessionStorage.setItem('wpm_color','#27ae60')
+                }
+                else if ((ch_wpm/2) < det_wpm && det_wpm <= ch_wpm){
+                    $("#wpm").css("background-color","#ff4");
+//                    console.log('d=' + det_wpm);
+//                    console.log('c= ' + ch_wpm + 'yellow');
+                    sessionStorage.setItem('wpm_color','#ff4')
+                }
+                else if (det_wpm > ch_wpm){
+                    $("#wpm").css("background-color","#f02");
+//                    console.log('d=' + det_wpm);
+//                    console.log('c= ' + ch_wpm + 'red');
+                    sessionStorage.setItem('wpm_color','#f02')
+
+                }
+            //      freq variance
+                vmean = vmean / (Object.keys(c.variance).length - 1);
+                vpoint = vnewsest - vmean;
+                vpoint = Math.floor((vpoint / vmean) * 100);
+                det_var = Math.abs(vpoint);
+                if (det_var <= (ch_var/2)){
+                    $("#var").css("background-color","#27ae60");
+//                    console.log(' var d=' + det_var);
+//                    console.log('var c= ' + ch_var + 'green');
+                    sessionStorage.setItem('var_color','#27ae60')
+                }
+                else if ((ch_var/2) < det_var && det_var <= ch_var){
+                    $("#var").css("background-color","#ff4");
+//                    console.log('var d=' + det_var);
+//                    console.log('var c= ' + ch_var + 'yellow');
+                    sessionStorage.setItem('var_color','#ff4')
+                }
+                else if (det_var > ch_var){
+                    $("#var").css("background-color","#f02");
+//                    console.log('var d=' + det_var);
+//                    console.log('var c= ' + ch_var + 'red');
+                    sessionStorage.setItem('var_color','#f02')
+                }
+            //       breathiness
+                Tmean = Tmean / (Object.keys(c.brTime).length - 1);
+                Tpoint = Tnewsest - Tmean;
+                Tpoint = Math.floor((Tpoint / Tmean) * 100);
+                det_breath = Math.abs(Tpoint);
+                if (det_breath <= (ch_breath/2)){
+                    $("#breath").css("background-color","#27ae60");
+//                    console.log('d=' + det_breath);
+//                    console.log('c= ' + ch_breath + 'green');
+                    sessionStorage.setItem('bre_color','#27ae60')
+                }
+                else if ((ch_breath/2) < det_breath && det_breath <= ch_breath){
+                    $("#breath").css("background-color","#ff4");
+//                    console.log('d=' + det_breath);
+//                    console.log('c= ' + ch_breath + 'yellow');
+                    sessionStorage.setItem('bre_color','#ff4')
+                }
+                else if (det_breath > ch_breath){
+                    $("#breath").css("background-color","#f02");
+//                    console.log('d=' + det_breath);
+//                    console.log('c= ' + ch_breath + 'red');
+                    sessionStorage.setItem('bre_color','#f02')
+                }
+            //blinkspermin
+                BlinkMean = BlinkMean / (Object.keys(v.blinkspermin).length - 1);
+                BlinkPoint = blinkNewest - BlinkMean;
+                BlinkPoint = Math.floor((BlinkPoint / BlinkMean) * 100);
+                var det_blink = Math.abs(BlinkPoint);
+//                console.log('deterioation is ' + det_blink)
+                if (det_blink <= (ch_blink/2)){
+                    $("#blink").css("background-color","#27ae60");
+//                    console.log('d=' + det_blink);
+//                    console.log('c= ' + ch_blink + 'green');
+                    sessionStorage.setItem('blink_color','#27ae60')
+                }
+                else if ((ch_blink/2) < det_blink && det_blink <= ch_blink){
+                    $("#blink").css("background-color","#ff4");
+//                    console.log('d=' + det_blink);
+//                    console.log('c= ' + ch_blink + 'yellow');
+                    sessionStorage.setItem('blink_color','#ff4')
+                }
+                else if (det_blink > ch_blink){
+                    $("#blink").css("background-color","#f02");
+//                    console.log('d=' + det_blink);
+//                    console.log('c= ' + ch_blink + 'red');
+                    sessionStorage.setItem('blink_color','#f02')
+                }
+            // jaw vib
+                ppmMean = ppmMean / (Object.keys(v.peakspermin).length - 1);
+                console.log('ppmmean2 = ' + ppmMean);
+                ppmPoint = ppmNewest - ppmMean;
+                console.log('ppmpoint2 = ' + ppmPoint);
+                ppmPoint = Math.floor((ppmPoint / ppmMean) * 100);
+                var det_ppm = Math.abs(ppmPoint);
+                console.log('deterioation is ' + det_ppm);
+                console.log('last mean ' + ppmMean);
+                console.log('last point ' + ppmPoint);
+                if (det_ppm <= (ch_jvib/2)){
+                    $("#jvib").css("background-color","#27ae60");
+//                    console.log('d=' + det_ppm);
+//                    console.log('c= ' + ch_jvib + 'green');
+                    sessionStorage.setItem('jvib_color','#27ae60')
+                }
+                else if ((ch_jvib/2) < det_ppm && det_ppm <= ch_jvib){
+                    $("#jvib").css("background-color","#ff4");
+//                    console.log('d=' + det_ppm);
+//                    console.log('c= ' + ch_jvib + 'yellow');
+                    sessionStorage.setItem('jvib_color','#ff4')
+                }
+                else if (det_ppm > ch_jvib){
+                    $("#jvib").css("background-color","#f02");
+//                    console.log('d=' + det_ppm);
+//                    console.log('c= ' + ch_jvib + 'red');
+                    sessionStorage.setItem('jvib_color','#f02')
+                }
+            
+                
+            
+</script>
+{% endblock %}

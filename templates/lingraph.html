@@ -1,0 +1,270 @@
+{% extends 'nav.html' %} {% block body1 %}
+
+<!--                                        linear graph  -->
+
+<div class="container-fluid">
+    <h2 class='doc_chart_head'>  Doctor's charts for {{session['user']}} </h2>
+    <!-- 
+            This div will be used to house thye canvas targeted by the js below to genterate the chart.
+        -->
+    <div class="row">
+        <div class='col-md-10 col-md-push-1 card' id='textdiv'>
+            <canvas id="chart" class="chartbox"></canvas>
+        </div>
+    </div>
+    <div class="row">
+        <div class='col-md-12 cent'>
+            <!-- This is the btton to display the model wi -->
+<!--
+            <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Display Results</button>-->
+            <a href="/menu/">
+                <button type='button' class='recordbtn'>Home</button>
+            </a>
+
+        </div>
+    </div>
+    <!-----------------------------------------------------------------------------------------------
+                                        Temp will not be in the final product
+                                        DEMO FOR THIS SPRINT ONLY!!:)
+        ------------------------------------------------------------------------------------------------>
+    <!-- Bootstrap model used to display the datapace results... This can be used later for the alerts  -->
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close recordbtn" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Voice Recording Results By Date</h4>
+                </div>
+                <div class="modal-body">
+                    <!--- Js will target this and insert the content here.-->
+                    <p id="json"> </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--CLOSE CONTRAINER-->
+<!-- ---------------------------------------------------------------------------------------------------
+                        JS to handle dat and generate the chart using chart.js
+    --------------------------------------------------------------------------------------------------------->
+<script>
+    //loads the json of the users data from python 
+    var json = "{{jsonstring}}";
+    console.log(json)
+    var vjson = "{{videojsonstring}}";
+    console.log(vjson)
+    
+    //sets var y to the p tag in the modal window
+    var y = document.getElementById('json');
+    //inserts the data from json to the modal window
+    y.innerHTML = json;
+    //crates a funtion to clean the data using regEx to remove #&34 and insert "
+    var decodeHtmlEntity = function(x) {
+        return x.replace(/&#(\d+);/g, function(match, dec) {
+            return String.fromCharCode(dec);
+        });
+    };
+    //clears the python data
+    var cleanedData = decodeHtmlEntity(json);
+    var v_cleanedData = decodeHtmlEntity(vjson);
+    //parses the data to JSON
+    var c = JSON.parse(cleanedData);
+    var v = JSON.parse(v_cleanedData);
+    //creates 2 arrays fro the lables and data in the charts 
+    var lab = [];
+    var acc = [];
+    var wpm = [];
+    var vari = [];
+    var mfreq = [];
+    var btime = [];
+    var aAmp = [];
+    var bpm = [];
+    var ppm = [];   
+    console.log(c.accuracy);
+    console.log(c.words);
+    console.log(c.variance);
+    console.log(v.peakspermin);
+    console.log(v.blinkspermin);
+    
+     
+    /*
+    For loop looping through all the data and fixing the data to the 2 arrays
+    when the program grows we will need to do more in this for loop
+    */
+    for (var key in c.accuracy) {
+        lab.push(key);
+        acc.push(Math.floor(c.accuracy[key]));
+    }
+     for (var key in c.words) {
+        wpm.push(Math.floor(c.words[key]));
+    } 
+    for (var key in c.variance) {
+        vari.push(Math.floor(c.variance[key]));
+    }
+    for (var key in c.modalFrequency) {
+        mfreq.push(Math.floor(c.modalFrequency[key]));
+    }
+    for (var key in c.brTime) {
+        btime.push(Math.floor(c.brTime[key]));
+    }
+    for (var key in c.avgAmp) {
+        aAmp.push(Math.floor(c.avgAmp[key]));
+    }
+    
+    for (var key in v.blinkspermin){
+        bpm.push(Math.floor(v.blinkspermin[key]));
+    
+    }
+    for (var key in v.peakspermin){
+        ppm.push(Math.floor(v.peakspermin[key]));
+    }
+    
+    //calls the chart function to create the chart
+    chart();
+    
+    /*
+        This function is use dto create a line chart using chart.js
+        
+    */
+    
+    
+    function chart() {
+        new Chart(document.getElementById("chart"), {
+            //sets the type of chart
+            type: 'line',
+            data: {
+                //uses the labels array
+                labels: lab,
+                datasets: [{
+                    //uses the data array for data
+                    data: acc,
+                    scaleBeginAtZero: true,
+                    label: "Acc",
+                    borderColor: "#f442cb",
+                    borderWidth: 1.5,
+                    fill: false,
+                    pointRadius: 2,
+                    pointBackgroundColor: '#f442cb',
+                    pointBorderColor: '#f442cb',
+                }, {
+                    data: wpm,
+                    scaleBeginAtZero: true,
+                    label: "WPM",
+                    borderColor: "#45f442",
+                    borderWidth: 1.5,
+                    fill: false,
+                    pointRadius: 2,
+                    pointBackgroundColor: '#45f442',
+                    pointBorderColor: '#45f442',
+                    hidden: true
+
+                }, {
+                    data: vari,
+                    scaleBeginAtZero: true,
+                    label: "Variance",
+                    borderColor: "#4295f4",
+                    borderWidth: 1.5,
+                    fill: false,
+                    pointRadius: 2,
+                    pointBackgroundColor: '#4295f4',
+                    pointBorderColor: '#4295f4',
+                    hidden: true
+
+                }, {
+                    data: mfreq,
+                    scaleBeginAtZero: true,
+                    label: "Modal Frequency",
+                    borderColor: "#ff0000",
+                    borderWidth: 1.5,
+                    fill: false,
+                    pointRadius: 2,
+                    pointBackgroundColor: '#ff0000',
+                    pointBorderColor: '#ff0000',
+                    hidden: true
+
+                }, {
+                    data: btime,
+                    scaleBeginAtZero: true,
+                    label: "Breathiness",
+                    borderColor: "#ffff00",
+                    borderWidth: 1.5,
+                    fill: false,
+                    pointRadius: 2,
+                    pointBackgroundColor: '#ffff00',
+                    pointBorderColor: '#ffff00',                    
+                    hidden: true
+
+
+                }, {
+                    data: aAmp,
+                    scaleBeginAtZero: true,
+                    label: "Average Amplitude",
+                    borderColor: "#ff9900",
+                    borderWidth: 1.5,
+                    fill: false,
+                    pointRadius: 2,
+                    pointBackgroundColor: '#ff9900',
+                    pointBorderColor: '#ff9900',
+                    hidden: true
+
+                }, {
+                    data: bpm,
+                    scaleBeginAtZero: true,
+                    label: "Blinks Per Min",
+                    borderColor: "#660066",
+                    borderWidth: 1.5,
+                    fill: false,
+                    pointRadius: 2,
+                    pointBackgroundColor: '#660066',
+                    pointBorderColor: '#660066',
+                },{
+                    data: ppm,
+                    scaleBeginAtZero: true,
+                    label: "Jaw Vibration",
+                    borderColor: "#00ffcc",
+                    borderWidth: 1.5,
+                    fill: false,
+                    pointRadius: 2,
+                    pointBackgroundColor: '#00ffcc',
+                    pointBorderColor: '#00ffcc',
+
+                }
+                          
+                          ]
+            },
+            options: {
+                scales: {
+                    // sets the y axes from 0 
+                    yAxes: [{
+                        display: true,
+                        ticks: {
+                            beginAtZero: true, // minimum value will be 0.
+                        }
+                    }]
+                },
+                title: {
+                    display: false
+                        //chart title lable
+
+                        ,
+                }
+            }
+        });
+    }
+</script>
+
+
+<script>
+     function openSide() {
+        document.getElementById("mySidenav").style.width = "20%";
+    };
+    /* Set the width of the side navigation to 0 */
+    function closeSide() {
+        document.getElementById("mySidenav").style.width = "0";
+    };
+</script>
+{% endblock %}

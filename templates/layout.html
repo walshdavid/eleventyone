@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title> Parkinsons Trackers </title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link href="{{ url_for('static',filename='css/mater.css')}}" rel="stylesheet">
+    <link href="{{ url_for('static',filename='css/bootstrap.min.css')}}" rel="stylesheet">
+    <link href="{{ url_for('static',filename='css/layout_v325.css')}}" rel="stylesheet" type='text/css'>
+    <link href="../static/css/font-awesome-4.7.0/css/font-awesome.min.css" rel='stylesheet'>
+    <link href="{{ url_for('static',filename='css/waves.min.css')}}" rel="stylesheet" type='text/css'>
+    <link href="{{ url_for('static',filename='css/animate.min.css')}}" rel="stylesheet" type='text/css'>
+    <link href="{{ url_for('static',filename='css/stylelib.css')}}" rel="stylesheet" type='text/css'>
+    <link href="{{ url_for('static',filename='css/all-themes.css')}}" rel="stylesheet" type='text/css'>
+    <script src="{{ url_for('static', filename='js/Chart.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-select.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.simple-calendar.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.slimscroll.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/waves.min.js')}}"></script>
+    <!--<script src="{{ url_for('static', filename='js/admin.js')}}"></script>-->
+</head>
+<!--<body class="theme-blue">-->
+<div id='flash_overlay'> {% with messages = get_flashed_messages() %} {% if messages %} {% for message in messages%}
+    <div class="alert  alert-warning alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="close"> <span aria-hidden="true">&times</span></button> {{message}} </div> {% endfor %} {% endif %} {% endwith %} </div> {% block body %} {% endblock %}
+<!--<footer> <img src='../static/images/UHG_Logo_R_REV.png' class='footlogo'> </footer>
+-->
+</body>
+
+</html>

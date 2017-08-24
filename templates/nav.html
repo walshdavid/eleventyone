@@ -1,0 +1,20 @@
+{% extends 'layout.html' %} {% block body %}
+
+<body class="theme-blue">
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" id='closebtn' class="closebtn" onclick="closeSide()">&times;</a>
+        <ul class="nav navbar-nav">
+            <li><a href='/menu/'><i class="material-icons">home</i><span class='link'>Menu</span></a></li>
+            <li><a href='/res/' id='res_link'><i class="material-icons">timeline</i><span class='link'>See Your Results</span></a></li>
+            <li><a href='/info/'><i class="material-icons">find_in_page</i><span class='link'>Info and Resources</span></a></li>
+            <li><a href="/textpreferences"><i class="material-icons">settings</i><span class='link'>Patient Preferences</span></a></li>
+            <li><a href="#"><span onclick="openNav()" ><i class="material-icons">help_outline</i><span class='link'>Help</span></span></a></li>
+            <li><a href="/logout/"><i class="material-icons">exit_to_app</i><span class='link'>Logout</span></a></li>
+        </ul>
+    </div> 
+
+    {% block body1 %} {% endblock %}
+    
+    <footer> <img src='../static/images/UHG_Logo_R_REV.png' class='footlogo'> </footer>
+    
+   {% endblock %}

@@ -1,0 +1,330 @@
+{% extends 'nav.html' %} {% block body1 %}
+<!--                                        radar graph  -->
+
+<div class='container-fluid'>
+    <div class='row'>
+        <div class='col-md-6 left'>
+                <h2 class='graph'>Hi {{session['user']}}</h2>
+        
+            <p class='graph_info'>Today you showed a <span id='acc'></span>% change in <a href="#acc_panel" role='tab' data-toggle='tab'>Accuracy</a>, as well as a <span id='wpm'></span>% change in <a href="#wpm_panel" role='tab' data-toggle='tab'>Words per Minute</a>. </p>
+                
+                <p class= 'graph_info'> The other results include <a role='tab' data-toggle='tab' href="#var_panel">Frequency Varinace</a>, <a role='tab' data-toggle='tab' href="#mod_panel"> Modal Frequency</a> along with <a role='tab' data-toggle='tab' href="#bre_panel">Breathiness</a>, <a role='tab' data-toggle='tab' href="#amp_panel">Average Amplitude</a>.  You can also view your  <a role='tab' data-toggle='tab' href="#blink_panel"> Blink rate </a> and <a role='tab' data-toggle='tab' href="#jvib_panel"> Jaw Tremors</a>. To get a detailed explanation and to view your results, please see the box below. </p>
+                
+                
+                
+                <div class="col-sm-12 col-md-12">
+                     <div class='graphinfo_box' style="vertical-align: middle">   
+                            <ul class='nav nav-tabs' role="tablist" style='text-align:center;'>
+                                <li role='presentation' class='active'><a role='tab' data-toggle='tab' href="#acc_panel">Accuracy</a></li>
+                                <li role='presentation'><a role='tab' data-toggle='tab' href="#wpm_panel">Words per Min</a></li>
+                                <li role='presentation'><a role='tab' data-toggle='tab' href="#var_panel">Freq Var</a></li>
+                                <li role='presentation'><a role='tab' data-toggle='tab' href="#mod_panel">Modal Freq</a></li>
+                                <li role='presentation'><a role='tab' data-toggle='tab' href="#bre_panel">Breathiness</a></li>
+                                <li role='presentation'><a role='tab' data-toggle='tab' href="#amp_panel">Avg Amp</a></li>
+                                <li role='presentation'><a role='tab' data-toggle='tab' href="#blink_panel">Blink Rate</a></li>
+                                <li role='presentation'><a role='tab' data-toggle='tab' href="#jvib_panel">Jaw Vibration</a></li>
+                            </ul>
+
+                            <div class='tab-content'>
+                                <div role='tabpanel' class='tab-pane active' id='acc_panel'>
+                                    <p class= 'graph_info_box'>Accuracy is used to measure the quality of your speech. We gather and analyse your every recording to make sure we can constantly track and graph your results.</p>
+                                </div>
+
+                                <div role='tabpanel' class='tab-pane' id='wpm_panel'>
+                                    <p class= 'graph_info_box'>Words per minute as the name suggests is a measure of the number of words you speak per minute. This metric will help us to record the exact number of words that are recognised correctly.</p>
+                                </div>
+                                <div role='tabpanel' class='tab-pane' id='var_panel'>
+                                    <p class= 'graph_info_box'>Frequency Variance is a measure of the range of frequencies you speak in. This will give us a clear indication about your personal frequency range and should there be any changes, we will be in a good place to notify your doctor. You showed a <span id='vari'></span>% change. </p>
+                                </div>
+                                <div role='tabpanel' class='tab-pane' id='mod_panel'>
+                                    <p class= 'graph_info_box'> Modal frequency is the central tendency of the pitch of your voice. This will help us find out voice strains, if there are any. You recorded a value of <span id='mfreq'></span>% .</p>
+                                </div>
+                                <div role='tabpanel' class='tab-pane' id='bre_panel'>
+                                    <p class= 'graph_info_box'>Breathiness is how often breaths are taken during speech and how long the breaks are for. Should there be any uncharacterstic or excessive emisssion of breath, we will be in a good position to track them. <span id='brTime'></span>% is your change in breathiness.</p>
+                                </div>
+                                <div role='tabpanel' class='tab-pane' id='amp_panel'>
+                                    <p class= 'graph_info_box'>Through the average amplitude metric we will be measuring the  magnitude of the difference between the variable's extreme values. This will help us arrive at a personalised average value to base our analysis on. There is a <span id='avgAMP'></span>% change in your average amplitude. </p>
+                                </div>
+                                <div role='tabpanel' class='tab-pane' id='blink_panel'>
+                                    <p class= 'graph_info_box'>The blink rate is a count of how many times a minute you are blinking. Keeping a constant check on the blink rate will help us determine a personalised and a healthy number range of eye blinks for you. Your change in blink rate is <span id='blink'></span>%. </p>
+                                </div>
+                                <div role='tabpanel' class='tab-pane' id='jvib_panel'>
+                                    <p class= 'graph_info_box'>Jaw Vibration is a measure of how much the jaw moves during speech. This is to detect any possible tremors whilst speaking. <span id='jvib'></span>% is your amount of jaw tremors. </p>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            
+                
+        </div>
+        
+        
+        <div class='col-md-6 right_graph'>
+            <div class='card'>
+                <canvas id="myChart"></canvas>
+                <script>
+                    //loads the json of the users data from python 
+                    var json = "{{jsonstring}}";
+                    var vjson = "{{videojsonstring}}";
+                    var y = document.getElementById('json');
+                    //inserts the data from json to the modal window
+                    // y.innerHTML = json;
+                    //crates a funtion to clean the data using regEx to remove #&34 and insert "
+                    var decodeHtmlEntity = function (x) {
+                        return x.replace(/&#(\d+);/g, function (match, dec) {
+                            return String.fromCharCode(dec);
+                        });
+                    };
+                    //clears the python data
+                    var cleanedData = decodeHtmlEntity(json);
+                    var vid_cleanedData = decodeHtmlEntity(vjson);
+                    //parses the data to JSON
+                    var c = JSON.parse(cleanedData);
+                    var v = JSON.parse(vid_cleanedData);
+                    
+                    console.log(c);
+                    console.log(c.accuracy);
+                    console.log(c.words);
+                    console.log(c.variance);
+                    console.log(c.modalFrequency);
+                    console.log(c.brTime);
+                    console.log(c.avgAmp);
+                    console.log(Object.keys(c.accuracy).length);
+                    var len = Object.keys(c.accuracy).length;
+                    var wnewsest, wpoint, wmean = 0;            // words per min //
+                    var accnewsest, accpoint, accmean = 0;
+                    var vnewsest, vpoint, vmean =0;
+                    var MFnewsest, MFpoint, MFmean =0;
+                    var Tnewsest, Tpoint, Tmean =0;
+                    var Anewsest, Apoint, Amean =0;
+                    var blinkNewest, BlinkPoint, BlinkMean = 0;
+                    var ppmPoint, ppmNewest, ppmMean = 0;
+                    for (var key in c.accuracy) {
+                        // lab.push(key);
+                        /// dat.push(Math.floor(c.accuracypercentage[key]));
+                        len--;
+                        console.log(len);
+                        console.log(Math.floor(c.accuracy[key]));
+                        if (len != 0) {
+                            accmean = accmean + Math.floor(c.accuracy[key]);
+                            wmean = wmean + Math.floor(c.words[key]);
+                            vmean = vmean + Math.floor(c.variance[key]);
+                            MFmean = MFmean + Math.floor(c.modalFrequency[key]);
+                            Tmean = Tmean + Math.floor(c.brTime[key]);
+                            Amean = Amean + Math.floor(c.avgAmp[key]);
+                            console.log("accmean is " + accmean);
+                            console.log("wmean is " + wmean);
+                            console.log('vmean is ' + vmean);
+                        }
+                        else {
+                            accnewsest = Math.floor(c.accuracy[key]);
+                            wnewsest = Math.floor(c.words[key]);
+                            vnewsest = Math.floor(c.variance[key]);
+                            MFnewsest = Math.floor(c.modalFrequency[key]);
+                            Tnewsest = Math.floor(c.brTime[key]);
+                            Anewsest = Math.floor(c.avgAmp[key]);
+                        }
+                    }
+                    len = Object.keys(v.peakspermin).length;
+                    for (var key in v.blinkspermin){
+                        len--;
+                        if (len != 0){
+                        BlinkMean = BlinkMean + Math.floor(v.blinkspermin[key]);
+                        ppmMean = ppmMean + Math.floor(v.peakspermin[key]);
+                        console.log('ppmmean1 ' + ppmMean);
+                        }
+                        else{
+                        blinkNewest = Math.floor(v.blinkspermin[key]);
+                        ppmNewest = Math.floor(v.peakspermin[key]);
+                        console.log('ppmnewest ' + ppmNewest);
+                        }
+                    }
+                    
+                    accmean = accmean / (Object.keys(c.accuracy).length - 1);
+                    console.log("accmean is " + accmean);
+                    console.log("accnew is " + accnewsest);
+                    accpoint = Math.floor(accnewsest - accmean);
+                    document.getElementById("acc").innerHTML = accpoint;
+
+                    wmean = wmean / (Object.keys(c.accuracy).length - 1);
+                    wpoint = wnewsest - wmean;
+                    console.log("wper min is " + wpoint);
+                    wpoint = Math.floor((wpoint / wmean) * 100);
+                    document.getElementById("wpm").innerHTML = wpoint;
+                    console.log("wper min is " + wpoint);
+
+                    vmean = vmean / (Object.keys(c.variance).length - 1);
+                    console.log('vmean is ' + vmean);
+                    vpoint = vnewsest - vmean;
+                    vpoint = Math.floor((vpoint / vmean) * 100);
+                    document.getElementById("vari").innerHTML = vpoint;
+                    console.log('vmean is ' + vpoint);
+
+                    MFmean = MFmean / (Object.keys(c.modalFrequency).length - 1);
+                    MFpoint = MFnewsest - MFmean;
+                    MFpoint = Math.floor((MFpoint / MFmean) * 100);
+                    document.getElementById("mfreq").innerHTML = MFpoint;
+                    var ch_mfreq = "{{ch_mFreq}}";
+                    var det_mfreq = Math.abs(MFpoint);
+                    if (det_mfreq <= (ch_mfreq/2)){
+    //                    console.log('d=' + det_wpm);
+    //                    console.log('c= ' + ch_wpm + 'green');
+                        sessionStorage.setItem('mf_color','#27ae60')
+                    }
+                    else if ((ch_mfreq/2) < det_mfreq && det_mfreq <= ch_mfreq){
+    //                    console.log('d=' + det_wpm);
+    //                    console.log('c= ' + ch_wpm + 'yellow');
+                        sessionStorage.setItem('mf_color','#ff4')
+                    }
+                    else if (det_mfreq > ch_mfreq){
+    //                    console.log('d=' + det_wpm);
+    //                    console.log('c= ' + ch_wpm + 'red');
+                        sessionStorage.setItem('mf_color','#f02')
+                    }
+
+                    Tmean = Tmean / (Object.keys(c.brTime).length - 1);
+                    console.log('Tmean is ' + Tmean);
+                    Tpoint = Tnewsest - Tmean;
+                    Tpoint = Math.floor((Tpoint / Tmean) * 100);
+                    document.getElementById("brTime").innerHTML = Tpoint;
+                    console.log('Tmean is ' + Tpoint);
+
+                    Amean = Amean / (Object.keys(c.avgAmp).length - 1);
+                    console.log('Amean is ' + Amean);
+                    Apoint = Anewsest - Amean;
+                    Apoint = Math.floor((Apoint / Amean) * 100);
+                    document.getElementById("avgAMP").innerHTML = Apoint;
+                    var ch_avgAmp = "{{ch_avgAmp}}";
+                    var det_avgAmp = Math.abs(Apoint);
+                    if (det_avgAmp <= (ch_avgAmp/2)){
+    //                    console.log('d=' + det_wpm);
+    //                    console.log('c= ' + ch_wpm + 'green');
+                        sessionStorage.setItem('amp_color','#27ae60')
+                    }
+                    else if ((ch_avgAmp/2) < det_avgAmp && det_avgAmp <= ch_avgAmp){
+    //                    console.log('d=' + det_wpm);
+    //                    console.log('c= ' + ch_wpm + 'yellow');
+                        sessionStorage.setItem('amp_color','#ff4')
+                    }
+                    else if (det_avgAmp > ch_avgAmp){
+    //                    console.log('d=' + det_wpm);
+    //                    console.log('c= ' + ch_wpm + 'red');
+                        sessionStorage.setItem('amp_color','#f02')
+                    }
+                    
+                    BlinkMean = BlinkMean / (Object.keys(v.blinkspermin).length - 1);
+                    BlinkPoint = blinkNewest - BlinkMean;
+                    BlinkPoint = Math.floor((BlinkPoint / BlinkMean) * 100);
+                    if (BlinkPoint == Infinity){
+                        BlinkPoint = 0;
+                    }
+                    else{
+                        BlinkPoint = BlinkPoint;
+                    }
+                    document.getElementById("blink").innerHTML = BlinkPoint;
+                    
+                    ppmMean = ppmMean / (Object.keys(v.peakspermin).length - 1);
+                    ppmPoint = ppmNewest - ppmMean;
+                    ppmPoint = Math.floor((ppmPoint / ppmMean) * 100);
+                    document.getElementById("jvib").innerHTML = ppmPoint;
+
+                    //calls the chart function to create the chart
+                    chart();
+                    /*
+                        This function is use dto create a line chart using chart.js
+
+                    */
+                    function chart() {
+                        var ctx = document.getElementById("myChart");
+                        
+                        var values = [vpoint, Apoint, wpoint, accpoint, Tpoint, MFpoint,BlinkPoint,ppmPoint];
+                        var myChart = new Chart(ctx, {
+                            type: 'radar'
+                            , data: {
+                                labels: ["Frequnecy", "Amplitude", "Words per Min", "Accuracy","Breathiness","Modal Frequency","Blink Rate","Jaw Vibration"]
+                                , datasets: [{
+                                    data: values
+                                    , backgroundColor: [
+                                        'rgba(51, 204, 255, 0.2)'
+                                    ]
+                                    , borderColor: [
+                                        'rgb(51, 204, 255)'
+                                    ]
+                                    , borderWidth: 2
+                                    , lineTension: 0.25
+                                    , pointBackgroundColor: [
+                                        sessionStorage.getItem('var_color'), sessionStorage.getItem('amp_color'), sessionStorage.getItem('wpm_color'), sessionStorage.getItem('acc_color'), sessionStorage.getItem('bre_color'), sessionStorage.getItem('mf_color'), sessionStorage.getItem('blink_color'), sessionStorage.getItem('jvib_color')
+                                    ]
+                                    , pointBorderWidth: [
+                                        0
+                                    ]
+                                    , pointRadius :[
+                                        5,5,5,5,5,5,5,5
+                                    ]
+                                }]
+                            }
+                            , options: {
+                                    tooltips: {
+                                    callbacks: {
+                                        label: function(tooltipItems, data) {
+                                            return tooltipItems.yLabel + ' %';
+                                        }
+                                    }
+                                },
+                                legend: {
+                                    display: false
+                                }
+                                , scales: {
+                                    angleLines: {
+                                        gridLines: {
+                                            circular: true
+                                        }
+                                    }
+                                    , xAxes: [{
+                                        ticks: {
+                                            display: false
+                                        }
+                                        , gridLines: {
+                                            display: false
+                                            , drawBorder: false
+                                        }
+                                    }]
+                                    , yAxes: [{
+                                        ticks: {
+                                            min: 0
+                                            , max: 100
+                                            , display: false
+                                        }
+                                        , gridLines: {
+                                            display: false
+                                            , drawBorder: false
+                                        }
+                                    }]
+                                }
+                            }
+                        });
+                    }
+                </script>
+            </div>
+        </div>
+        
+        <div class='col-md-6 cent more_btn'>
+                      <a href="/lingraph/"><button class='recordbtn'>More</button></a>
+        </div>
+    </div>
+</div> 
+
+<script>
+$(document).ready(function(){
+    $('#res_link').attr('href','/lingraph/')
+});
+
+         function openSide() {
+        document.getElementById("mySidenav").style.width = "20%";
+    };
+    /* Set the width of the side navigation to 0 */
+    function closeSide() {
+        document.getElementById("mySidenav").style.width = "0";
+    };
+    
+</script>{% endblock %}

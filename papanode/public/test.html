@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title> Parkinsons Trackers </title>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+</head>
+
+<body>
+    <video src="" id="vid" style="width:640px; height: 480px;" autoplay="true"></video>
+    <canvas id="preview" style="display:none"></canvas>
+    <div id="log"></div> <a href="view.html">next</a> </body>
+<!--imports socket io client and jquery-->
+<script src="socket.io.js"></script>
+<script>
+    var socket = io.connect("http://localhost:1235");
+    socket.emit("start", "LET'S GO!");
+</script>
+
+</html>

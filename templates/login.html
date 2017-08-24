@@ -1,0 +1,93 @@
+{% extends 'layout.html' %} {% block body %}
+<style>
+    .login-page {
+        background-color: #e9e9e9!important;
+    }
+    
+    .bg-uh {
+        background-color: #003da1 !important;
+        color: white!important;
+    }
+    
+    .uh-links > a {
+        color: #003da1 !important;
+    }
+    
+    [type="checkbox"].filled-in:checked.chk-col-uh + label:after {
+        border: 2px solid #003da1!important;
+        background-color: #003da1!important;
+    }
+    
+    .login-page {
+        min-height: 80%;
+        /* Fallback for browsers do NOT support vh unit */
+        min-height: 80vh;
+        /* These two lines are counted as one :-)       */
+        display: flex;
+        align-items: center;
+    }
+</style>
+
+<body class="login-page">
+    <div class="login-box">
+        <div class="logo"> <img src='../static/images/UHG_Logo_R_RGB2.png' class='text-center img-responsive'> </div>
+        <div class="card">
+            <div class="body">
+                <form id="sign_in" action="{{ url_for('login_user') }}" method="POST">
+                    <div class="msg">Sign in to start your session</div>
+                    <div class="input-group"> <span class="input-group-addon">
+                            <i class="material-icons">person</i>
+                        </span>
+                        <div class="form-line">
+                            <input type="text" class="form-control" name="username" id="username" placeholder="Username" required autofocus> </div>
+                    </div>
+                    <div class="input-group"> <span class="input-group-addon">
+                            <i class="material-icons">lock</i>
+                        </span>
+                        <div class="form-line">
+                            <input type="password" class="form-control" name="password" placeholder="Password" type="password" name="password" id="pwd" required> </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-8 p-t-5">
+                            <input type="checkbox" name="rememberme" id="rememberme" class="filled-in chk-col-uh">
+                            <label for="rememberme">Remember Me</label>
+                        </div>
+                        <div class="col-xs-4">
+                            <button class="btn btn-block bg-uh waves-effect " value="Login" type="submit">SIGN IN</button>
+                        </div>
+                    </div>
+                    <div class="row m-t-15 m-b--20">
+                        <div class="col-xs-6 uh-links"> <a href="/register">Register Now!</a> </div>
+                        <div class="col-xs-6 align-right uh-links"> <a href="#">Forgot Password?</a> </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+<!--
+<div class="row login">
+    <div class="log_form">
+        <img src='../static/images/UHG_Logo_R_RGB2.png' class='logotop text-center'>
+        <div class='form_box'>
+        <form  action="{{ url_for('login_user') }}" method="POST">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" name="username" class="form-control" id="username">
+            </div>
+            <div class="form-group">
+                <label for="pwd">Password:</label>
+                <input type="password" name="password" class="form-control" id="pwd">
+            </div>
+            <button type="submit" class="logbtn" value="Login">Login</button>
+
+        </form>
+        <div class='reg'>
+            <a href="/register">Sign Up Here!</a>
+            </div>
+        </div>
+    </div>
+</div>
+-->
+
+
+{% endblock %}

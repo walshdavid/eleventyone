@@ -1,0 +1,7 @@
+__pycache__/
+recordings_audio
+recordings_video
+papanode/node_modules
+logfiles
+.wav
+.log

@@ -1,0 +1,184 @@
+{% extends 'nav.html' %} {% block body1 %}
+
+        
+    <div class="container-fluid">
+        <h1 class="headSel">Please Select the article you would like to read, for more choices click on the arrow.</h1>
+        <div class="row">
+            <div class="col-md-12 selectRow">
+                <div class="col-sm-3">
+                     <div class="selectionIMG" id="img1"><img class="siteimage" src="static/images/rte.png" style="display: inline;"></div>
+                </div>
+                <div class="col-sm-3">
+                     <div class="headlineBox" id="pref1.1" onclick="submitChoice(this.innerHTML)" style="display: inline-block;"><p class="headline">Children wait up to 12 years for first dental screening</p></div>
+                </div>
+                <div class="col-sm-3">
+                     <div class="headlineBox" id="pref1.2" onclick="submitChoice(this.innerHTML)" style="display: inline-block;"><p class="headline">Spain rescues almost 600 migrants at sea in one day</p></div>
+                </div>
+                <div class="col-sm-3">
+                     <div class="headlineBox" id="pref1.3" onclick="submitChoice(this.innerHTML)" style="display: none;"><p class="headline">EMPTY</p></div>
+                </div>
+            </div>
+
+            
+            
+            <div class="col-md-12 selectRow">
+                <div class="col-sm-3">
+                        <div class="selectionIMG" id="img2"><img class="siteimage" src="static/images/rte-sport.png"></div>
+                </div>
+                <div class="col-sm-3">
+                     <div class="headlineBox" id="pref2.1" onclick="submitChoice(this.innerHTML)" style="display: inline-block;"><p class="headline">A night for fighting Irish to seize their destiny</p></div>
+                </div>
+                <div class="col-sm-3">
+                        <div class="headlineBox" id="pref2.2" onclick="submitChoice(this.innerHTML)" style="display: inline-block;"><p class="headline">Mayo should be happy to be hated</p></div>
+                </div>
+                <div class="col-sm-3">
+                        <div class="headlineBox" id="pref2.3" onclick="submitChoice(this.innerHTML)" style="display: inline-block;"><p class="headline">McGregor hears disrespect and finds extra motivation</p></div>
+                </div>
+            </div>
+            
+            <div class="col-md-12 selectRow">
+                <div class='arrow'>
+                    <i class="nextArr fa fa-chevron-right" style="font-size:100px;color:#003da1" onclick="advanceSelection()">
+                    </i>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    <script>
+        
+        
+    var currIndex = 0;
+
+    $(document).ready( function(){
+        openNav();
+        currIndex = 0;
+    });
+
+    var decodeHtmlEntity = function (x) {
+        return x.replace(/&#(\d+);/g, function (match, dec) {
+            return String.fromCharCode(dec);
+        });
+    };
+
+    var cleaned = decodeHtmlEntity('{{jsonstring}}')
+    console.log(cleaned)
+    data = JSON.parse(cleaned)
+
+    var keynamelist = [];
+    for(key in data.head1){
+        keynamelist.push(key)
+    }
+
+    function insertContent(){
+        var i1 = document.getElementById('img1');
+        var h11 = document.getElementById('pref1.1');
+        var h12 = document.getElementById('pref1.2');
+        var h13 = document.getElementById('pref1.3');
+        var h21 = document.getElementById('pref2.1');
+        var h22 = document.getElementById('pref2.2');
+        var h23 = document.getElementById('pref2.3');
+        var i2 = document.getElementById('img2');
+
+
+        i1.innerHTML = '';
+        h11.innerHTML = '';
+        h12.innerHTML = '';
+        h13.innerHTML = '';
+        h21.innerHTML = '';
+        h22.innerHTML = '';
+        h23.innerHTML = '';
+        i2.innerHTML = '';
+        var str1 = data.images[keynamelist[currIndex]];
+        var str1 = data.images[keynamelist[currIndex]];
+        var htmlStrIMG1 = "<img class=\"siteimage\" src=\"static/images/" + str1 + "\" style=\"display: inline;\">";
+        var str2 = data.images[keynamelist[currIndex+1]];
+        var htmlStrIMG2 = "<img class=\"siteimage\" src=\"static/images/" + str2 + "\ style=\"display: inline;\">";
+        var htmlStrIMG2 = "<img class=\"siteimage\" src=\"static/images/" + str2 + "\" >";
+        i1.innerHTML = htmlStrIMG1;
+        i2.innerHTML = htmlStrIMG2;
+
+        h11.innerHTML = "<p class='headline'>" + data.head1[keynamelist[currIndex]] + "</p>";
+        testEmpty(h11,data.head1[keynamelist[currIndex]]);
+        h12.innerHTML = "<p class='headline'>" + data.head2[keynamelist[currIndex]] + "</p>";
+        testEmpty(h12,data.head2[keynamelist[currIndex]]);
+        h13.innerHTML = "<p class='headline'>" + data.head3[keynamelist[currIndex]] + "</p>";
+        testEmpty(h13,data.head3[keynamelist[currIndex]]);
+        h21.innerHTML = "<p class='headline'>" + data.head1[keynamelist[currIndex+1]] + "</p>";
+        testEmpty(h21,data.head1[keynamelist[currIndex+1]]);
+        h22.innerHTML = "<p class='headline'>" + data.head2[keynamelist[currIndex+1]] + "</p>";
+        testEmpty(h22,data.head2[keynamelist[currIndex+1]]);
+        h23.innerHTML = "<p class='headline'>" + data.head3[keynamelist[currIndex+1]] + "</p>";
+        testEmpty(h23,data.head3[keynamelist[currIndex+1]]);
+
+        
+        
+
+
+    }
+
+    function testEmpty(element,text){
+        if(text === 'EMPTY'){
+            element.style.display = 'none';
+        }
+        else{
+             element.style.display = 'inline-block';
+        }
+    }
+
+    insertContent()
+
+    function advanceSelection(){
+        currIndex+=2;
+        if(currIndex >= 6){
+            currIndex = 0;
+        }
+        insertContent()
+
+    }
+
+    function submitChoice(filename){
+        console.log("HEEEEELLO!!!")
+
+        var inFilename = false;
+        var file = ''
+        for(val in filename){
+            if (inFilename){
+                if (filename[val] === '<'){
+                    break;
+                }
+                else{
+                    file += filename[val];
+                }
+            }
+            else{
+                if (filename[val] === '>'){
+                    inFilename = true;
+                }
+            }
+        }
+
+
+        var url = "{{url_for('text_choice_func')}}"
+
+        var datavalues = {
+        'file': file
+        };
+        
+       $.ajax({
+        url: url,
+        type: 'POST',
+        data: datavalues,   // converts js value to JSON string
+        dataType: "json"
+        }).done(function(result){     // on success get the return object from server
+            window.location.href = "/audiorec/"
+            console.log(result)     // do whatever with it. In this case see it in console
+        });
+    }
+
+
+</script>
+{% endblock %}

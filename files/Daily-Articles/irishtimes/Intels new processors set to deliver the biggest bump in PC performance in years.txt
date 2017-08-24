@@ -1,0 +1,15 @@
+Intel Corp, the biggest maker of semiconductors, has said its new processors are going to deliver the biggest bump in performance that personal computer users have experienced in years.
+
+The eighth generation of its Core line will provide as much as a 40 per cent jump over its predecessor, according to the California-based company. That’s a leap in performance that arguably only happens once in a decade, Intel said. New laptops built on the chips will come to market in September.
+
+Intel, whose chips are the heart of more than 80 percent of the world’s PCs, has been remarkably successful in a market that’s been declining since it peaked in 2011 and is now more than 100 million units smaller than it was.
+
+In the second quarter, Intel’s PC chip unit posted a 12 percent increase in sales even as overall shipments of PCs continued their slide.
+
+Intel’s winning strategy - one that the new lineup will try to keep going - has been to persuade consumers that they need to buy up, spending extra on computers with more expensive chips even though they’re not replacing their old PCs as often as they did.
+
+Shrinking machines
+
+The new range of chips from Intel will provide a massive leap forward in performance compared with the 450 million PCs that are currently in use and that are more than five years old, Intel said. In that period, processors have become twice as fast at crunching data and the machines themselves have shrunk to be half as thick as they were. Editing 4K video shot on a GoPro camera might not even be possible on older machines, while with the new chips the time needed to do such tasks will be reduced to single-digit minutes versus tens of minutes on previous generation machines.
+
+- Bloomberg
